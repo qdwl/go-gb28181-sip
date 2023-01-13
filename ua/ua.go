@@ -178,7 +178,7 @@ func (ua *UserAgent) ControlWithContext(ctx context.Context, profile *account.Pr
 	return nil
 }
 
-func (ua *UserAgent) Invite(target sip.Uri, recipient sip.SipUri, subject sip.Header, body *string) (*session.Session, error) {
+func (ua *UserAgent) Invite(target sip.Uri, recipient sip.SipUri, body *string, headers ...sip.Header) (*session.Session, error) {
 
 	uri, err := parser.ParseUri(fmt.Sprintf("sip:%s@%s:%d", ua.config.UserName, ua.config.Host, ua.config.LocalPort))
 	if err != nil {
@@ -195,10 +195,10 @@ func (ua *UserAgent) Invite(target sip.Uri, recipient sip.SipUri, subject sip.He
 		ua.config.SipStack,
 	)
 
-	return ua.InviteWithContext(context.TODO(), profile, target, recipient, subject, body)
+	return ua.InviteWithContext(context.TODO(), profile, target, recipient, body, headers...)
 }
 
-func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Profile, target sip.Uri, recipient sip.SipUri, subject sip.Header, body *string) (*session.Session, error) {
+func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Profile, target sip.Uri, recipient sip.SipUri, body *string, headers ...sip.Header) (*session.Session, error) {
 	from := &sip.Address{
 		DisplayName: sip.String{Str: profile.DisplayName},
 		Uri:         profile.URI,
@@ -216,8 +216,8 @@ func (ua *UserAgent) InviteWithContext(ctx context.Context, profile *account.Pro
 		return nil, err
 	}
 
-	if subject != nil {
-		request.AppendHeader(subject)
+	for _, header := range headers {
+		request.AppendHeader(header)
 	}
 
 	if body != nil {

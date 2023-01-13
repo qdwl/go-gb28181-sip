@@ -29,7 +29,6 @@ type ServerConfig struct {
 	Transport         string    `json:"transport"`         //传输层协议(目前只支持udp,tcp)
 	DisableAuth       bool      `json:"disableAuth"`       //是否启用鉴权
 	LogLevel          log.Level `json:"logLevel"`          //日志级别
-
 }
 
 // Server
